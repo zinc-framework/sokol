@@ -6,6 +6,17 @@
 
 # Sokol
 
+> ### ⚠️ This is the Zinc fork of sokol
+> 
+> Consumed by [Zinc](https://github.com/zinc-framework) via the **`zinc`** branch. It tracks
+> upstream [floooh/sokol](https://github.com/floooh/sokol) closely and carries a small,
+> deliberately minimal set of patches.
+> 
+> **All deviations from upstream are documented in [`zinc-branch/`](zinc-branch/README.md)**,
+> along with how to re-sync with upstream and which changes were deliberately solved outside
+> sokol instead. If you patch this fork, add a page there.
+
+
 [**See what's new**](https://github.com/floooh/sokol/blob/master/CHANGELOG.md) (**17-Aug-2026**: sokol_gfx.h: important validation layer fix for storage images - regressed in the write-unsealed update of 09-Aug-2026)
 
 [![Build](/../../actions/workflows/main.yml/badge.svg)](/../../actions/workflows/main.yml) [![Bindings](/../../actions/workflows/gen_bindings.yml/badge.svg)](/../../actions/workflows/gen_bindings.yml) [![build](https://github.com/floooh/sokol-zig/actions/workflows/main.yml/badge.svg)](https://github.com/floooh/sokol-zig/actions/workflows/main.yml) [![build](https://github.com/floooh/sokol-nim/actions/workflows/main.yml/badge.svg)](https://github.com/floooh/sokol-nim/actions/workflows/main.yml) [![Odin](https://github.com/floooh/sokol-odin/actions/workflows/main.yml/badge.svg)](https://github.com/floooh/sokol-odin/actions/workflows/main.yml)[![Rust](https://github.com/floooh/sokol-rust/actions/workflows/main.yml/badge.svg)](https://github.com/floooh/sokol-rust/actions/workflows/main.yml)[![Dlang](https://github.com/floooh/sokol-d/actions/workflows/build.yml/badge.svg)](https://github.com/floooh/sokol-d/actions/workflows/build.yml)[![C3](https://github.com/floooh/sokol-c3/actions/workflows/build.yml/badge.svg)](https://github.com/floooh/sokol-c3/actions/workflows/build.yml)
