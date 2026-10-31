@@ -48,7 +48,16 @@ of the swapchain's alpha mode.
   regress.
 - **Failure falls back rather than aborting.** If any part of the composition setup fails,
   the code logs `WIN32_COMPOSITEMODE_FELL_BACK_TO_OPAQUE`, releases what it built, and
-  continues down the normal HWND path.
+  continues down the normal HWND path. That path is opaque, so for a transparent app the
+  fallback is not graceful: the transparent clear shows as solid black.
+- **The debug flag is retried, like the HWND path does.** In `SOKOL_DEBUG` builds the
+  device is requested with `D3D11_CREATE_DEVICE_DEBUG`, which fails outright on any machine
+  without the Windows "Graphics Tools" optional feature, so on most end-user PCs. The
+  composite path first shipped without the retry and fell back to opaque on exactly those
+  machines (Oct 2026: a released game's window showed black on players' PCs, while dev
+  boxes, which have Graphics Tools, looked fine). It now logs
+  `WIN32_D3D11_CREATE_DEVICE_WITH_DEBUG_FAILED` and retries without the flag. To test the
+  no-Graphics-Tools case on a dev box, make the debug-flag `D3D11CreateDevice` call fail.
 - **No new link-time dependency.** `dcomp.dll` is resolved with
   `LoadLibrary`/`GetProcAddress`, so binaries built with composite support still run on
   systems where DirectComposition is unavailable.
@@ -80,6 +89,8 @@ surface format (`_sapp_d3d11_swapchain_color_format`) from the render-target-vie
 ## New log items
 
 ```
+WIN32_D3D11_CREATE_DEVICE_WITH_DEBUG_FAILED
+WIN32_D3D11_CREATE_DEVICE_FAILED
 WIN32_D3D11_GET_IDXGIFACTORY2_FAILED
 WIN32_D3D11_CREATE_COMPOSITION_SWAPCHAIN_FAILED
 WIN32_DCOMP_LOAD_DLL_FAILED

@@ -1745,6 +1745,8 @@ typedef struct sapp_allocator {
     _SAPP_LOGITEM_XMACRO(WIN32_D3D11_GET_IDXGIFACTORY_FAILED, "could not obtain IDXGIFactory object") \
     _SAPP_LOGITEM_XMACRO(WIN32_D3D11_GET_IDXGIADAPTER_FAILED, "could not obtain IDXGIAdapter object") \
     _SAPP_LOGITEM_XMACRO(WIN32_D3D11_QUERY_INTERFACE_IDXGIDEVICE1_FAILED, "could not obtain IDXGIDevice1 interface") \
+    _SAPP_LOGITEM_XMACRO(WIN32_D3D11_CREATE_DEVICE_WITH_DEBUG_FAILED, "D3D11CreateDevice() with D3D11_CREATE_DEVICE_DEBUG failed, retrying without debug flag (composite_mode)") \
+    _SAPP_LOGITEM_XMACRO(WIN32_D3D11_CREATE_DEVICE_FAILED, "D3D11CreateDevice() failed (composite_mode)") \
     _SAPP_LOGITEM_XMACRO(WIN32_D3D11_GET_IDXGIFACTORY2_FAILED, "could not obtain IDXGIFactory2 object (required for composite_mode)") \
     _SAPP_LOGITEM_XMACRO(WIN32_D3D11_CREATE_COMPOSITION_SWAPCHAIN_FAILED, "CreateSwapChainForComposition() failed") \
     _SAPP_LOGITEM_XMACRO(WIN32_DCOMP_LOAD_DLL_FAILED, "could not load dcomp.dll, composite_mode is not available") \
@@ -9050,7 +9052,29 @@ _SOKOL_PRIVATE bool _sapp_d3d11_create_composite_device_and_swapchain(UINT creat
         &_sapp.d3d11.device,            // ppDevice
         &result_feature_level,          // pFeatureLevel
         &_sapp.d3d11.device_context);   // ppImmediateContext
+    #if defined(SOKOL_DEBUG)
+    if (!SUCCEEDED(hr)) {
+        // Same retry as the HWND path: the D3D11 debug layer only exists where the 'Graphics
+        // Tools' optional feature is installed, and without it D3D11_CREATE_DEVICE_DEBUG fails
+        // the whole device. Not retrying here drops a transparent window to the opaque fallback
+        // on most end-user machines, where it shows as solid black.
+        _SAPP_ERROR(WIN32_D3D11_CREATE_DEVICE_WITH_DEBUG_FAILED);
+        create_flags &= ~(UINT)D3D11_CREATE_DEVICE_DEBUG;
+        hr = D3D11CreateDevice(
+            NULL,                           // pAdapter (use default)
+            D3D_DRIVER_TYPE_HARDWARE,       // DriverType
+            NULL,                           // Software
+            create_flags,                   // Flags
+            feature_levels,                 // pFeatureLevels
+            num_feature_levels,             // FeatureLevels
+            D3D11_SDK_VERSION,              // SDKVersion
+            &_sapp.d3d11.device,            // ppDevice
+            &result_feature_level,          // pFeatureLevel
+            &_sapp.d3d11.device_context);   // ppImmediateContext
+    }
+    #endif
     if (!SUCCEEDED(hr) || (0 == _sapp.d3d11.device)) {
+        _SAPP_ERROR(WIN32_D3D11_CREATE_DEVICE_FAILED);
         return false;
     }
     hr = _sapp_d3d11_QueryInterface(_sapp.d3d11.device, _sapp_win32_refiid(_sapp_IID_IDXGIDevice1), (void**)&_sapp.d3d11.dxgi_device);
