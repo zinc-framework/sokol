@@ -17,6 +17,7 @@ at this folder to decide whether to add something, prefer:
 | Feature | Files touched | Status |
 |---|---|---|
 | [win32 `composite_mode`](win32-composite-mode.md) | `sokol_app.h` | Candidate for upstreaming |
+| macOS `acceptsFirstMouse` (the click that activates the window reaches the app) | `sokol_app.h` | Backport of [floooh/sokol#1640](https://github.com/floooh/sokol/pull/1640), already merged upstream. The next re-sync drops it. |
 
 ## How to re-sync with upstream
 
